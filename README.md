@@ -22,6 +22,13 @@ Let's say you want to transfer your image to an EC2 instance and not use DockerH
 1. On the remote machine, run `docker load -i clj-cloud-playground.tar` to unpack and load your app.
 1. On the remote machine, run the app using any of the same commands as you did above.
 
+To use Amazon Elastic Container Registry (ECR) to [push an image](https://docs.aws.amazon.com/AmazonECR/latest/userguide/docker-push-ecr-image.html):
+1. Using the AWS Console, create a repository (e.g. clj-cloud-playground). It will create a repository with a URI like `XXXXXXXXXX.dkr.ecr.us-east-1.amazonaws.com/clj-cloud-playground`. This will follow the pattern `docker tag e9ae3c220b23 aws_account_id.dkr.ecr.region.amazonaws.com/my-web-app`.
+1. Click on your repository name (e.g. clj-cloud-playground)
+1. Click the button 'View push commands' at the top right to get the command sequence needed to upload your image.
+1. Once you've done the above your image should be hosted in the repo.
+
+
 ## TODO
 Add directions for deployment with Elastic Beanstalk
 
