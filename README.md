@@ -23,18 +23,25 @@ Let's say you want to transfer your image to an EC2 instance and not use DockerH
 1. On the remote machine, run the app using any of the same commands as you did above.
 
 To use Amazon Elastic Container Registry (ECR) to [push an image](https://docs.aws.amazon.com/AmazonECR/latest/userguide/docker-push-ecr-image.html):
-1. Using the AWS Console, create a repository (e.g. clj-cloud-playground). It will create a repository with a URI like `XXXXXXXXXX.dkr.ecr.us-east-1.amazonaws.com/clj-cloud-playground`. This will follow the pattern `docker tag e9ae3c220b23 aws_account_id.dkr.ecr.region.amazonaws.com/my-web-app`.
-1. Click on your repository name (e.g. clj-cloud-playground)
+1. Using the AWS Console, create a repository (e.g. clj-cloud-playground). It will create a repository with a URI like `XXXXXXXXXX.dkr.ecr.us-east-1.amazonaws.com/clj-cloud-playground`.
 1. Click the button 'View push commands' at the top right to get the command sequence needed to upload your image.
 1. Once you've done the above your image should be hosted in the repo.
+1. Now, ssh into the EC2 instance you will be hosting your docker image from. Ensure docker is set up and running by following [these instructions](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/docker-basics.html#install_docker).
+1. Ensure you are logged in to ECR by following [these instructions](https://docs.aws.amazon.com/AmazonECR/latest/userguide/Registries.html#registry_auth).
+1. Launch the container with `docker run -e NREPL_PORT=3001 -p 80:3000 -p 3001:3001 XXXXXXXXXX.dkr.ecr.us-east-1.amazonaws.com/clj-cloud-playground &`. Note that the & will run the process in the background.
 
+To stop your app, use `docker ps` to identify the container id then `docker stop id` (id is the container you just identified) to stop the container.
 
 ## TODO
 Add directions for deployment with Elastic Beanstalk
 
-Add directions for deployment with 
-
 Figure out how to get the drawbridge middleware working.
+
+## More Links
+
+ * [Docker Basics](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/docker-basics.html)
+ * [Running Docker on AWS from the ground up](https://www.ybrikman.com/writing/2015/11/11/running-docker-aws-ground-up/)
+ * [Running Docker on AWS EC2](https://hackernoon.com/running-docker-on-aws-ec2-83a14b780c56)
 
 ## License
 
