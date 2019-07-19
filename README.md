@@ -4,11 +4,13 @@ A Clojure demonstration project designed to enable you to rapidly spin up and ex
 
 ## Usage
 
+#### Run Locally
 To run locally, do one of:
 * Launch a REPL and evaluate `(clj-cloud-playground.core/start)`
 * lein run
 * lein uberjar, java -jar target/clj-cloud-playground-0.1.0-SNAPSHOT-standalone.jar
 
+#### Run with Docker
 To run using Docker:
 1. Build the standalone app with `lein uberjar`
 1. Build the image using `docker build --tag=clj-cloud-playground .`
@@ -16,12 +18,14 @@ To run using Docker:
    * `docker run -e NREPL_PORT=3001 -p 80:3000 -p 3001:3001 clj-cloud-playground`: Sets the `nrepl-port` variable to to 3001 and map the container's port 3000 to local port 80. This allows you to connect to your running image and do interactive development.
    * `docker run -e IS_PRODUCTION=true -p 3000:3000 clj-cloud-playground`: Sets the `is-production` environment variable to true so you can modify your internal app as appropriate.
 
+##### Direct Transfer of Docker Image to EC2
 Let's say you want to transfer your image to an EC2 instance and not use DockerHub or any other sort of repo. Assuming you have an EC2 instance running and all the correct keys and permissions set up, you can run your app in the cloud by doing the following:
 1. On you local machine, run `docker save -o clj-cloud-playground.tar clj-cloud-playground`. This will package up your app as a single archive.
 1. On your local machine, run `scp -i ~/.ssh/mykey.pem clj-cloud-playground.tar ec2-user@XXXXXXXXXX.amazonaws.com:/home/ec2-user/` to copy the file to your remote machine. You must fill in the right values for your ssh key and host.
 1. On the remote machine, run `docker load -i clj-cloud-playground.tar` to unpack and load your app.
 1. On the remote machine, run the app using any of the same commands as you did above.
 
+##### Transfer Docker Image Using ECR
 To use Amazon Elastic Container Registry (ECR) to [push an image](https://docs.aws.amazon.com/AmazonECR/latest/userguide/docker-push-ecr-image.html):
 1. Using the AWS Console, create a repository (e.g. clj-cloud-playground). It will create a repository with a URI like `XXXXXXXXXX.dkr.ecr.us-east-1.amazonaws.com/clj-cloud-playground`.
 1. Click the button 'View push commands' at the top right to get the command sequence needed to upload your image.
@@ -31,6 +35,30 @@ To use Amazon Elastic Container Registry (ECR) to [push an image](https://docs.a
 1. Launch the container with `docker run -e NREPL_PORT=3001 -p 80:3000 -p 3001:3001 XXXXXXXXXX.dkr.ecr.us-east-1.amazonaws.com/clj-cloud-playground &`. Note that the & will run the process in the background.
 
 To stop your app, use `docker ps` to identify the container id then `docker stop id` (id is the container you just identified) to stop the container.
+
+#### Run with Amazon Elastic Beanstalk
+[Amazon Elasticbeanstalk](https://aws.amazon.com/elasticbeanstalk/) with Clojure has two options:
+1. Run as an uberwar using Apache Tomcat
+1. Run as a standalone uberjar app
+
+##### EBS with Tomcat
+This project uses [lein-uberwar](https://github.com/luminus-framework/lein-uberwar) and [lein-beanstalk](https://github.com/weavejester/lein-beanstalk) for deployment. [lein-beanstalk](https://github.com/weavejester/lein-beanstalk) is a bit dated, but it works. Other forks include [lein-elastic-beanstalk](https://github.com/ktgit/lein-elastic-beanstalk) and [lein-aws-beanstalk](https://github.com/zombofrog/lein-aws-beanstalk).
+
+To deploy your war app with Tomcat do the following:
+1. Add  [lein-uberwar](https://github.com/luminus-framework/lein-uberwar) to your project.clj plugins vector.
+1. Specify the application entry point for your uberjar in your project file (e.g. `:uberwar {:handler clj-cloud-playground.core/app}`).
+1. Run `lein uberwar` to create your war file.
+1. Add [lein-beanstalk](https://github.com/weavejester/lein-beanstalk) to your project.clj plugins vector.
+1. Configure your aws credentials in your project.clj file as described [here](https://github.com/weavejester/lein-beanstalk#basic-configuration).
+1. Specify the application entry point for the beanstalk plugin in your project file (e.g. `:ring {:handler clj-cloud-playground.core/app}`).
+1. Configure your aws environment as shown in the project file or take a look at [this useful blog post](https://victorjcheng.wordpress.com/2016/02/02/deploying-a-clojure-app-using-elastic-beanstalk/). One thing you must get right is the :stack-name field. You can get a list of current stack options by invoking the command `aws elasticbeanstalk list-available-solution-stacks` and looking for the desired Tomcat instance. Note that if you read the above blog post the stack name there is out of date. This project uses "64bit Amazon Linux 2018.03 v3.1.6 running Tomcat 8.5 Java 8". Also, the blog post indicates needed a VPC for a t2.nano instance. This did not seem to be the case for me.
+1. Run `lein beanstalk deploy $environment` where $environment is the environment specified in your project. For example, in this project the command is `lein beanstalk deploy development`. In this project, this key can be found at `(get-in project [:aws :beanstalk :environments 0 :name])`. 
+
+This should succes
+
+This might work:
+ * Add [lein dockerstalk](https://github.com/juxt/lein-dockerstalk) and [lein zip](https://github.com/mrmcc3/lein-zip) to your plugins (This is already done here.)
+ * Running `aws elasticbeanstalk list-available-solution-stacks` is useful
 
 ## TODO
 Add directions for deployment with Elastic Beanstalk
@@ -42,6 +70,11 @@ Figure out how to get the drawbridge middleware working.
  * [Docker Basics](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/docker-basics.html)
  * [Running Docker on AWS from the ground up](https://www.ybrikman.com/writing/2015/11/11/running-docker-aws-ground-up/)
  * [Running Docker on AWS EC2](https://hackernoon.com/running-docker-on-aws-ec2-83a14b780c56)
+ * [AWS Beanstalk, Docker and Clojure – The JUXT experience of deploying Docker containers through Beanstalk](https://juxt.pro/blog/posts/beanstalk.html)
+ * [lein-beanstalk](https://github.com/weavejester/lein-beanstalk): A bit out of date
+ * [lein-elastic-beanstalk](https://github.com/ktgit/lein-elastic-beanstalk): More up to date, but still ancient
+ * [lein-aws-beanstalk](https://github.com/zombofrog/lein-aws-beanstalk): Much more up to date
+ * [Deploying a Clojure app using Elastic Beanstalk](https://victorjcheng.wordpress.com/2016/02/02/deploying-a-clojure-app-using-elastic-beanstalk/)
 
 ## License
 
