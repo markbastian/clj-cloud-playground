@@ -13,43 +13,72 @@
                  [integrant "0.7.0"]
                  [metosin/ring-http-response "0.9.1"]
                  [nrepl "0.6.0"]
-                 [nrepl/drawbridge "0.2.0"]
-                 ;[ring "1.7.1"]
-                 ;[ring/ring-defaults "0.3.2"]
-                 ]
+                 [nrepl/drawbridge "0.2.0"]]
 
   :plugins [[lein-uberwar "0.2.1"]
-            ;https://github.com/weavejester/lein-beanstalk
             [lein-beanstalk "0.2.7"]
-            ;https://github.com/juxt/lein-dockerstalk
-            ;[juxt/lein-dockerstalk "0.1.0"]
-            ;https://github.com/zombofrog/lein-aws-beanstalk
-            ;[lein-aws-beanstalk "0.2.82"]
-            ;[lein-zip "0.1.1"]
-            ]
+            [juxt/lein-dockerstalk "0.1.0"]
+            [lein-zip "0.1.1"]]
 
   :main clj-cloud-playground.core
 
-  :zip ["Dockerfile" "target/clj-cloud-playground-0.1.0-SNAPSHOT-standalone.jar"]
+  :aliases {"deploy-ebs-tomcat"  ["do"
+                                  ["clean"]
+                                  ["with-profile" "+ebs-tomcat" "uberwar"]
+                                  ["with-profile" "+ebs-tomcat" "beanstalk" "deploy" "development"]]
+            "deploy-ebs-docker"  ["do"
+                                  ["clean"]
+                                  ["uberjar"]
+                                  ["with-profile" "+ebs-docker" "zip"]
+                                  ["with-profile" "+ebs-docker" "dockerstalk" "deploy" "development" "target/clj-cloud-playground-0.1.0-SNAPSHOT.zip"]]}
 
-  ;For lein uberwar
-  :uberwar {:handler clj-cloud-playground.core/app}
-
-  ;For lein beanstalk
-  :ring {:handler clj-cloud-playground.core/app}
-
-  :profiles {:uberjar {:aot :all}}
+  :profiles {:uberjar    {:aot :all}
+             :ebs-tomcat {:uberwar {:handler clj-cloud-playground.core/app}
+                          :ring    {:handler clj-cloud-playground.core/app}
+                          :aws     {:beanstalk
+                                    {:region     "us-east-1"
+                                     :stack-name "64bit Amazon Linux 2018.03 v3.1.6 running Tomcat 8.5 Java 8"
+                                     :environments
+                                                 [{:name    "development"
+                                                   :options {"aws:autoscaling:asg"
+                                                             {"MinSize" "1" "MaxSize" "1"}
+                                                             "aws:autoscaling:launchconfiguration"
+                                                             {"InstanceType" "t2.nano"}}}]}}}
+             :ebs-docker {:zip     ["Dockerfile" "target/clj-cloud-playground-0.1.0-SNAPSHOT-standalone.jar"]
+                          :aws     {:beanstalk
+                                    {:region     "us-east-1"
+                                     :stack-name "64bit Amazon Linux 2018.03 v2.12.14 running Docker 18.06.1-ce"
+                                     ;:stack-name "64bit Amazon Linux 2018.03 v2.15.0 running Multi-container Docker 18.06.1-ce (Generic)"
+                                     :environments
+                                                 [{:name    "development"
+                                                   :options {"aws:autoscaling:asg"
+                                                             {"MinSize" "1" "MaxSize" "1"}
+                                                             "aws:autoscaling:launchconfiguration"
+                                                             {"InstanceType" "t2.nano"}}}]}}}}
 
   :repl-options {:init-ns clj-cloud-playground.core}
 
-  :aws
-  {:beanstalk
-   {:region     "us-east-1"
-    :stack-name "64bit Amazon Linux 2018.03 v3.1.6 running Tomcat 8.5 Java 8"
-    :environments
-                [{:name    "development"
-                  :options {"aws:autoscaling:asg"
-                            {"MinSize" "1" "MaxSize" "1"}
-                            "aws:autoscaling:launchconfiguration"
-                            {"InstanceType" "t2.nano"}}}]}}
+  ;"64bit Amazon Linux 2018.03 v2.15.0 running Multi-container Docker 18.06.1-ce (Generic)"
+
+  ;:aws
+  ;{:beanstalk
+  ; {:region     "us-east-1"
+  ;  :stack-name "64bit Amazon Linux 2018.03 v2.15.0 running Multi-container Docker 18.06.1-ce (Generic)"
+  ;  :environments
+  ;              [{:name    "development"
+  ;                :options {"aws:autoscaling:asg"
+  ;                          {"MinSize" "1" "MaxSize" "1"}
+  ;                          "aws:autoscaling:launchconfiguration"
+  ;                          {"InstanceType" "t2.nano"}}}]}}
+  ;
+  ;:aws
+  ;{:beanstalk
+  ; {:region     "us-east-1"
+  ;  :stack-name "64bit Amazon Linux 2018.03 v3.1.6 running Tomcat 8.5 Java 8"
+  ;  :environments
+  ;              [{:name    "development"
+  ;                :options {"aws:autoscaling:asg"
+  ;                          {"MinSize" "1" "MaxSize" "1"}
+  ;                          "aws:autoscaling:launchconfiguration"
+  ;                          {"InstanceType" "t2.nano"}}}]}}
   )
