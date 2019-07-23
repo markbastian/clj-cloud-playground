@@ -82,9 +82,14 @@ If you want to do this, do the following:
 
 Terminated the deployment with the beanstalk plugin a la `lein beanstalk terminate development`. Note that dockerstalk uses beanstalk so you just use the beanstalk plugin for application termination.
 
+##### Configuring https with EBS
+By default, EBS provides only insecure (http) connections. To configure your app for https follow the directions [here](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/configuring-https.html) and [here](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/configuring-https-elb.html). For the second link, use a "Classic Load Balancer" on step 5.
+
+
 ## TODO
 
-Figure out how to get the drawbridge middleware working.
+ * Get middleware working correctly so that responses are downloads (wrap-response or something probably)
+ * Figure out port forwarding or some other solution for drawbridge+cursive connections (https://groups.google.com/forum/#!topic/cursive/7zethDTEIXo)
 
 ## More Links
 
@@ -92,7 +97,11 @@ Figure out how to get the drawbridge middleware working.
  * [Running Docker on AWS from the ground up](https://www.ybrikman.com/writing/2015/11/11/running-docker-aws-ground-up/)
  * [Running Docker on AWS EC2](https://hackernoon.com/running-docker-on-aws-ec2-83a14b780c56)
  * [AWS Beanstalk, Docker and Clojure – The JUXT experience of deploying Docker containers through Beanstalk](https://juxt.pro/blog/posts/beanstalk.html)
-
+ * [Configuring HTTPS for Your Elastic Beanstalk Environment](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/configuring-https.html)
+ * [Configuring Your Elastic Beanstalk Environment's Load Balancer to Terminate HTTPS](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/configuring-https-elb.html)
+ * [Drawbridge - HTTP Transport for nREPL](https://github.com/nrepl/drawbridge)
+ * [Live-Debugging Remote Clojure Apps with Drawbridge](https://devcenter.heroku.com/articles/debugging-clojure)
+ 
 ## License
 
 Copyright © 2019 Mark Bastian

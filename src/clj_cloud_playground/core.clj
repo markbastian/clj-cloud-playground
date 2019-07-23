@@ -11,7 +11,9 @@
     [clj-time.core :as time]
     [taoensso.timbre :as timbre]
     [nrepl.server :refer [start-server stop-server]]
-    [clojure.pprint :as pp]))
+    [clojure.pprint :as pp]
+    [drawbridge.core]
+    [ring.middleware.defaults :refer :all]))
 
 (defmethod ig/init-key :web/server [_ {:keys [handler host port]}]
   (immutant/run handler {:host host :port port}))
@@ -31,7 +33,10 @@
                                {:free-memory-MB  (/ (.freeMemory rt) mb)
                                 :max-memory-MB   (/ (.maxMemory rt) mb)
                                 :total-memory-MB (/ (.totalMemory rt) mb)})))))
-      (route/not-found "<h1>Page not found</h1>"))))
+      (let [nrepl-handler (drawbridge.core/ring-handler)]
+        (ANY "/repl" request (nrepl-handler request)))
+      (route/not-found "<h1>Page not found</h1>"))
+    (wrap-defaults api-defaults)))
 
 (def config
   {:web/server
