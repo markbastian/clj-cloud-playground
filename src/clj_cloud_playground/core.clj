@@ -36,7 +36,9 @@
       (let [nrepl-handler (drawbridge.core/ring-handler)]
         (ANY "/repl" request (nrepl-handler request)))
       (route/not-found "<h1>Page not found</h1>"))
-    (wrap-defaults api-defaults)))
+    (wrap-defaults (assoc-in api-defaults [:responses :content-types] false))
+    ;(wrap-defaults site-defaults)
+    ))
 
 (def config
   {:web/server

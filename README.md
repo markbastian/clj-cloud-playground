@@ -2,7 +2,7 @@
 
 A Clojure demonstration project designed to enable you to rapidly spin up and experiment with a Clojure application using Docker, Containerization, and the like.
 
-## Usage
+## The Deployment Options Zoo
 
 #### Run Locally
 To run locally, do one of:
@@ -85,10 +85,16 @@ Terminated the deployment with the beanstalk plugin a la `lein beanstalk termina
 ##### Configuring https with EBS
 By default, EBS provides only insecure (http) connections. To configure your app for https follow the directions [here](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/configuring-https.html) and [here](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/configuring-https-elb.html). For the second link, use a "Classic Load Balancer" on step 5.
 
+## Debugging with the REPL
+By design, this project is meant to be live-coded with a REPL connection. The following methods for connection are pre-wired:
+* If launched with a repl and the system is initialized with (start) you are already in a REPL session.
+* If launched with the NREPL_PORT environment variable set and that port is open, you can connect to a REPL server on that port.
+* ring-drawbridge is configured such that you can connect via `lein repl :connect http://localhost:3000/repl` where the correct server name and port are used (in this case locahost:3000).
 
 ## TODO
 
- * Get middleware working correctly so that responses are downloads (wrap-response or something probably)
+ * Better understand ring-middleware such that defaults work for all cases. Currently, `(wrap-defaults (assoc-in api-defaults [:responses :content-types] false))` handles content and the drawbridge connection correctly.
+ * Maybe add security to ring-drawbridge. The goal of this project is not to show how to do everything, so this isn't necessarily a requirement for this project, but should absolutely be done in any real application.
  * Figure out port forwarding or some other solution for drawbridge+cursive connections (https://groups.google.com/forum/#!topic/cursive/7zethDTEIXo)
 
 ## More Links
