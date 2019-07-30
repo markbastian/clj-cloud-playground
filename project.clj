@@ -19,7 +19,8 @@
   :plugins [[lein-uberwar "0.2.1"]
             [lein-beanstalk "0.2.7"]
             [juxt/lein-dockerstalk "0.1.0"]
-            [lein-zip "0.1.1"]]
+            [lein-zip "0.1.1"]
+            [nrepl/drawbridge "0.2.0"]]
 
   :main clj-cloud-playground.core
 
