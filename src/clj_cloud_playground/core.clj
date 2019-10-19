@@ -4,23 +4,15 @@
     [reitit.ring :as ring]
     [environ.core :refer [env]]
     [hiccup.page :refer [html5]]
-    [immutant.web :as immutant]
-    [integrant.core :as ig]
     [ring.util.http-response :refer [ok not-found]]
     [taoensso.timbre :as timbre]
     [nrepl.server :refer [start-server stop-server]]
     [clojure.pprint :as pp]
     [drawbridge.core]
     [partsbin.core :refer [start stop] :as partsbin]
-    [partsbin.immutant.web.core :as web]
+    [partsbin.ring.adapter.jetty.core :as web]
     [ring.middleware.defaults :refer :all])
   (:import (java.util Date)))
-
-(defmethod ig/init-key :web/server [_ {:keys [handler host port]}]
-  (immutant/run handler {:host host :port port}))
-
-(defmethod ig/halt-key! :web/server [_ server]
-  (immutant/stop server))
 
 (defn hello-world-handler [request]
   (ok (html5
@@ -54,6 +46,7 @@
 (def config
   {::web/server
    {:host    "0.0.0.0"
+    :join? false
     :port    3000
     :handler #'app}})
 

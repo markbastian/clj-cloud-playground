@@ -88,6 +88,21 @@ If you want to do this, do the following:
 
 Terminated the deployment with the beanstalk plugin a la `lein beanstalk terminate development`. Note that dockerstalk uses beanstalk so you just use the beanstalk plugin for application termination.
 
+###### Challenge - Solution Stack Drift
+Sometimes when you go to revist a stack it will fail since the :stack-name entry may be deprecated. One good way to list the most recent options is to use the [Cognitect AWS API](https://github.com/cognitect-labs/aws-api). To do so, add the following dependencies to your project:
+* `[com.cognitect.aws/api "0.8.352"]`
+* `[com.cognitect.aws/endpoints "1.1.11.651"]`
+* `[com.cognitect.aws/elasticbeanstalk "746.2.533.0"]`
+
+Then, in a repl invoke the following and look for the stack you want:
+```
+(require '[cognitect.aws.client.api :as aws])
+(def ebs (aws/client {:api :elasticbeanstalk}))
+(:SolutionStacks (aws/invoke ebs {:op :ListAvailableSolutionStacks}))
+```
+
+TODO: Create a new beanstalk plugin using the Cognitect API
+
 ##### Configuring https with EBS
 By default, EBS provides only insecure (http) connections. To configure your app for https follow the directions [here](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/configuring-https.html) and [here](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/configuring-https-elb.html). For the second link, use a "Classic Load Balancer" on step 5.
 

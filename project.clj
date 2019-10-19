@@ -7,14 +7,19 @@
                  [com.taoensso/timbre "4.10.0"]
                  [environ "1.1.0"]
                  [hiccup "1.0.5"]
-                 [org.immutant/web "2.1.10"]
+                 [ring/ring-jetty-adapter "1.7.1"]
                  [integrant "0.7.0"]
                  [metosin/ring-http-response "0.9.1"]
                  [ring/ring-defaults "0.3.2"]
                  [nrepl "0.6.0"]
                  [nrepl/drawbridge "0.2.1"]
                  [metosin/reitit "0.3.10"]
-                 [markbastian/partsbin "0.1.0"]]
+                 [markbastian/partsbin "0.1.1-SNAPSHOT"]
+                 ;Experimenting
+                 [com.cognitect.aws/api "0.8.352"]
+                 [com.cognitect.aws/endpoints "1.1.11.655"]
+                 [com.cognitect.aws/elasticbeanstalk "746.2.533.0"]
+                 ]
 
   :plugins [[lein-uberwar "0.2.1"]
             [lein-beanstalk "0.2.7"]
@@ -34,6 +39,9 @@
                                  ["with-profile" "+ebs-docker" "zip"]
                                  ["with-profile" "+ebs-docker" "dockerstalk" "deploy" "development" "target/clj-cloud-playground-0.1.0-SNAPSHOT.zip"]]}
 
+  ;(require '[cognitect.aws.client.api :as aws])
+  ;(def ebs (aws/client {:api :elasticbeanstalk}))
+
   ;https://docs.aws.amazon.com/en_pv/elasticbeanstalk/latest/platforms/platforms-supported.html
   :profiles {:uberjar    {:aot :all}
              :ebs-tomcat {:uberwar {:handler clj-cloud-playground.core/app}
@@ -51,9 +59,7 @@
              :ebs-docker {:zip ["Dockerfile" "target/clj-cloud-playground-0.1.0-SNAPSHOT-standalone.jar"]
                           :aws {:beanstalk
                                 {:region       "us-east-1"
-                                 :stack-name   "Docker running on 64bit Amazon Linux/2.13.0"
-                                 ;:stack-name   "64bit Amazon Linux 2018.03 v2.12.17 running Docker 18.06.1-ce"
-                                 ;:stack-name   "64bit Amazon Linux 2018.03 v2.12.14 running Docker 18.06.1-ce"
+                                 :stack-name   "64bit Amazon Linux 2018.03 v2.13.0 running Docker 18.06.1-ce"
                                  :s3-bucket    "clj-cloud-playground"
                                  :environments [{:name    "development"
                                                  :options {"aws:autoscaling:asg"
