@@ -18,8 +18,7 @@
                  ;Experimenting
                  [com.cognitect.aws/api "0.8.352"]
                  [com.cognitect.aws/endpoints "1.1.11.655"]
-                 [com.cognitect.aws/elasticbeanstalk "746.2.533.0"]
-                 ]
+                 [com.cognitect.aws/elasticbeanstalk "746.2.533.0"]]
 
   :plugins [[lein-uberwar "0.2.1"]
             [lein-beanstalk "0.2.7"]
@@ -44,18 +43,19 @@
 
   ;https://docs.aws.amazon.com/en_pv/elasticbeanstalk/latest/platforms/platforms-supported.html
   :profiles {:uberjar    {:aot :all}
-             :ebs-tomcat {:uberwar {:handler clj-cloud-playground.core/app}
-                          :ring    {:handler clj-cloud-playground.core/app}
-                          :aws     {:beanstalk
-                                    {:region       "us-east-1"
-                                     :stack-name   "64bit Amazon Linux 2018.03 v3.2.2 running Tomcat 8.5 Java 8"
-                                     ;:stack-name   "Tomcat 8.5 with Java 8 running on 64bit Amazon Linux"
-                                     :s3-bucket    "clj-cloud-playground"
-                                     :environments [{:name    "development"
-                                                     :options {"aws:autoscaling:asg"
-                                                               {"MinSize" "1" "MaxSize" "1"}
-                                                               "aws:autoscaling:launchconfiguration"
-                                                               {"InstanceType" "t2.nano"}}}]}}}
+             :ebs-tomcat {:uberwar      {:handler clj-cloud-playground.core/app}
+                          :ring         {:handler clj-cloud-playground.core/app}
+                          :aws          {:beanstalk
+                                         {:region       "us-east-1"
+                                          :stack-name   "64bit Amazon Linux 2018.03 v3.3.0 running Tomcat 8.5 Java 8"
+                                          :s3-bucket    "clj-cloud-playground"
+                                          :environments [{:name    "development"
+                                                          :options {"aws:autoscaling:asg"
+                                                                    {"MinSize" "1" "MaxSize" "1"}
+                                                                    "aws:autoscaling:launchconfiguration"
+                                                                    {"InstanceType" "t2.nano"}}}]}}
+                          :dependencies [[commons-fileupload/commons-fileupload "1.4"]
+                                         [javax.xml.bind/jaxb-api "2.4.0-b180830.0359"]]}
              :ebs-docker {:zip ["Dockerfile" "target/clj-cloud-playground-0.1.0-SNAPSHOT-standalone.jar"]
                           :aws {:beanstalk
                                 {:region       "us-east-1"

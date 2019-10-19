@@ -117,6 +117,8 @@ By design, this project is meant to be live-coded with a REPL connection. The fo
  * Better understand ring-middleware such that defaults work for all cases. Currently, `(wrap-defaults (assoc-in api-defaults [:responses :content-types] false))` handles content and the drawbridge connection correctly.
  * Maybe add security to ring-drawbridge. The goal of this project is not to show how to do everything, so this isn't necessarily a requirement for this project, but should absolutely be done in any real application.
  * Figure out port forwarding or some other solution for drawbridge+cursive connections (https://groups.google.com/forum/#!topic/cursive/7zethDTEIXo)
+ * Convert this into Github pages
+ * Develop new beanstalk plugin with the cognitect APIs
 
 ## More Links
 
