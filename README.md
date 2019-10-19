@@ -18,6 +18,12 @@ To run using Docker:
    * `docker run -e NREPL_PORT=3001 -p 80:3000 -p 3001:3001 clj-cloud-playground`: Sets the `nrepl-port` variable to to 3001 and map the container's port 3000 to local port 80. This allows you to connect to your running image and do interactive development.
    * `docker run -e IS_PRODUCTION=true -p 3000:3000 clj-cloud-playground`: Sets the `is-production` environment variable to true so you can modify your internal app as appropriate.
 
+##### DockerHub
+1. Create a repo at [Docker's Cloud Site](https://cloud.docker.com/). In this example my repo name is `markbastian/clj-cloud-playground`.
+1. Build the image using `docker build --tag=$REPO:$TAG .` where `$REPO` and `$TAG` are your repository and tag names. In this case the exact command I am using is `docker build --tag=markbastian/clj-cloud-playground:latest .` I selected a tag of `latest` arbitrarily. It can be whatever you want.
+1. Push the image using `docker push markbastian/clj-cloud-playground:latest`.
+1. TODO: Deploy commands...
+
 ##### Direct Transfer of Docker Image to EC2
 Let's say you want to transfer your image to an EC2 instance and not use DockerHub or any other sort of repo. Assuming you have an EC2 instance running and all the correct keys and permissions set up, you can run your app in the cloud by doing the following:
 1. On you local machine, run `docker save -o clj-cloud-playground.tar clj-cloud-playground`. This will package up your app as a single archive.
