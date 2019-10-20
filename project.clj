@@ -14,7 +14,7 @@
                  [nrepl "0.6.0"]
                  [nrepl/drawbridge "0.2.1"]
                  [metosin/reitit "0.3.10"]
-                 [markbastian/partsbin "0.1.1-SNAPSHOT"]
+                 [markbastian/partsbin "0.1.1"]
                  ;Experimenting
                  [com.cognitect.aws/api "0.8.352"]
                  [com.cognitect.aws/endpoints "1.1.11.655"]
