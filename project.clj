@@ -16,7 +16,7 @@
                  [metosin/reitit "0.3.10"]
                  [markbastian/partsbin "0.1.1"]
                  ;Experimenting
-                 [com.cognitect.aws/api "0.8.352"]
+                 [com.cognitect.aws/api "0.8.378"]
                  [com.cognitect.aws/endpoints "1.1.11.655"]
                  [com.cognitect.aws/elasticbeanstalk "746.2.533.0"]]
 
