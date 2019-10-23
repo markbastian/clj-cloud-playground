@@ -32,11 +32,35 @@ Let's say you want to transfer your image to an EC2 instance and not use DockerH
 1. On the remote machine, run the app using any of the same commands as you did above.
 
 ##### Transfer Docker Image Using ECR
-To use Amazon Elastic Container Registry (ECR) to [push an image](https://docs.aws.amazon.com/AmazonECR/latest/userguide/docker-push-ecr-image.html):
+To use Amazon Elastic Container Registry (ECR) to [push an image](https://docs.aws.amazon.com/en_pv/AmazonECR/latest/userguide/docker-push-ecr-image.html):
 1. Using the AWS Console, create a repository (e.g. clj-cloud-playground). It will create a repository with a URI like `XXXXXXXXXX.dkr.ecr.us-east-1.amazonaws.com/clj-cloud-playground`.
-1. Click the button 'View push commands' at the top right to get the command sequence needed to upload your image.
+1. Click the button 'View push commands' at the top right to get the command sequence needed to upload your image. For this project, the commands will be along these lines:
+   1. `$(aws ecr get-login --no-include-email --region us-east-1)`
+   1. `docker build -t clj-cloud-playground .`
+   1. `docker tag clj-cloud-playground:latest XXXXXXXXXX.dkr.ecr.us-east-1.amazonaws.com/clj-cloud-playground:latest`
+   1. `docker push XXXXXXXXXX.dkr.ecr.us-east-1.amazonaws.com/clj-cloud-playground:latest` Note that this can take several minutes.
 1. Once you've done the above your image should be hosted in the repo.
-1. Now, ssh into the EC2 instance you will be hosting your docker image from. Ensure docker is set up and running by following [these instructions](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/docker-basics.html#install_docker).
+1. To launch an EC2 instance:
+   1. Go to the [launch instance wizard](https://console.aws.amazon.com/ec2/v2/home?region=us-east-1#LaunchInstanceWizard:)
+   1. Optional: Select free tier only instances
+   1. Choose an Amazon Machine Image (AMI). Choose the _Amazon Linux 2 AMI_ 64-bit (x86) option.
+   1. Select a _t2.micro_ instance as it is free tier eligible.
+   1. Specify a keypair and launch the instance. This could take several minutes.
+   1. Once the instance launches you can see it in the [EC2 Instances Panel](https://console.aws.amazon.com/ec2/v2/home?region=us-east-1#Instances:sort=instanceId).
+1. Now, ssh into the EC2 instance you will be hosting your docker image. The commands to do this can be found in the "Connect" item on the Actions menu in the [EC2 Instances Panel](https://console.aws.amazon.com/ec2/v2/home?region=us-east-1#Instances:sort=instanceId). Alternatively, there is a browser based ssh client in the connect options.
+1. Ensure docker is set up and running by following [these instructions](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/docker-basics.html#install_docker).
+   1. You must also configure your EC2 instance with permissions to access ECR. 
+   1. Create a policy that allows access to your ECR repository.
+   1. Create a role with the above policy attached.
+   1. From the EC2 console, select your instance and choose Actions -> Instance Settings -> Attach/Replace IAM Role. Choose the role you created.
+   1. Test your role out by executing `$(aws ecr get-login --no-include-email --region us-east-1)` from your EC2 instance.
+   1. You can now run your image with any of the `docker run` commands from above, except you need to specify the ECR Image URI in the command. For example, `docker run -e NREPL_PORT=3001 -p 80:3000 -p 3001:3001 XXXXXXXXXX.dkr.ecr.us-east-1.amazonaws.com/clj-cloud-playgrod:latest
+`.
+   1. You now need to open port 80 for access from the outside. From the EC2 console, choose your image. At the bottom of the screen will be a link next to the Security Groups item for the image's security group. Click this.
+   1. From the newly-opened security group tab, choose the inbound rules tab at the bottom of the screen and select edit.
+   1. Choose "Add Rule" and select HTTP with a Source of Anywhere. If your image is running you can now navigate to its Public DNS entry (found on the EC2 page) and see your app.
+   1. Finally, to allow REPL access add another custom security rule with the settings "Custom TCP", Protocol: TCP, Port Range: your nREPL port (e.g. 3001), Source: My IP (This is critical - don't make it anywhere), and Description: nREPL (or whatever).
+   1. Connect to your repl using a remote connection with the IP of the EC2 instance and your configured REPL port.
 1. Ensure you are logged in to ECR by following [these instructions](https://docs.aws.amazon.com/AmazonECR/latest/userguide/Registries.html#registry_auth).
 1. Launch the container with `docker run -e NREPL_PORT=3001 -p 80:3000 -p 3001:3001 XXXXXXXXXX.dkr.ecr.us-east-1.amazonaws.com/clj-cloud-playground &`. Note that the & will run the process in the background.
 
@@ -112,6 +136,25 @@ By design, this project is meant to be live-coded with a REPL connection. The fo
 * If launched with the NREPL_PORT environment variable set and that port is open, you can connect to a REPL server on that port.
 * ring-drawbridge is configured such that you can connect via `lein repl :connect http://localhost:3000/repl` where the correct server name and port are used (in this case locahost:3000).
 
+## Troubleshooting
+If the aws cli or other commands start to fail, there's a good chance you have a Python problem (who doesn't?). For example, this error started randomly happening on my development box:
+```
+iMac:clj-cloud-playground mbastian$ $(aws ecr get-login --no-include-email --region us-east-1)
+Traceback (most recent call last):
+  File "/usr/local/bin/aws", line 6, in <module>
+    from aws.main import main
+  File "/usr/local/lib/python3.7/site-packages/aws/main.py", line 23
+    print '%(name)s: %(endpoint)s' % {
+                                 ^
+SyntaxError: invalid syntax
+```
+The best way to remedy this is with the [pipenv](https://pipenv.kennethreitz.org/en/latest/). I did the following to fix the above:
+``` 
+pipenv shell
+pipenv install awscli
+```
+Once the above was done and everything worked in the Python virtual env.
+
 ## TODO
 
  * Better understand ring-middleware such that defaults work for all cases. Currently, `(wrap-defaults (assoc-in api-defaults [:responses :content-types] false))` handles content and the drawbridge connection correctly.
@@ -145,3 +188,5 @@ Public License, v. 2.0 are satisfied: GNU General Public License as published by
 the Free Software Foundation, either version 2 of the License, or (at your
 option) any later version, with the GNU Classpath Exception which is available
 at https://www.gnu.org/software/classpath/license.html.
+
+[ECR_repo]: resources/ECR_repo.png "ECR Landing Page"
