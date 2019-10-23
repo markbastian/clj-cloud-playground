@@ -173,6 +173,7 @@ Once the above was done and everything worked in the Python virtual env.
  * [Configuring Your Elastic Beanstalk Environment's Load Balancer to Terminate HTTPS](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/configuring-https-elb.html)
  * [Drawbridge - HTTP Transport for nREPL](https://github.com/nrepl/drawbridge)
  * [Live-Debugging Remote Clojure Apps with Drawbridge](https://devcenter.heroku.com/articles/debugging-clojure)
+ * [Configuring the Reverse Proxy](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/java-se-nginx.html)
  
 ## License
 
