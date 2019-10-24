@@ -53,7 +53,7 @@
 (defonce sys (partsbin/create config))
 
 (defn -main [& args]
-    (let [nrepl-port (some->> :nrepl-port env (re-matches #"\d+") Long/parseLong)
+    (let [nrepl-port 3001                                   ;(some->> :nrepl-port env (re-matches #"\d+") Long/parseLong)
           nrepl-host (env :nrepl-host "0.0.0.0")
           production? (#{"true" true} (env :is-production false))
           server (when (and nrepl-port (not production?)) (start-server :bind nrepl-host :port nrepl-port))

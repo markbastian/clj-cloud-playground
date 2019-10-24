@@ -57,6 +57,7 @@
                           :dependencies [[commons-fileupload/commons-fileupload "1.4"]
                                          [javax.xml.bind/jaxb-api "2.4.0-b180830.0359"]]}
              :ebs-docker {:zip ["Dockerfile" "target/clj-cloud-playground-0.1.0-SNAPSHOT-standalone.jar"]
+                          ;["Dockerfile" "target/clj-cloud-playground-0.1.0-SNAPSHOT-standalone.jar" ".ebextensions"]
                           :aws {:beanstalk
                                 {:region       "us-east-1"
                                  :stack-name   "64bit Amazon Linux 2018.03 v2.13.0 running Docker 18.06.1-ce"
