@@ -176,6 +176,7 @@ Once the above was done and everything worked in the Python virtual env.
  * [Configuring the Reverse Proxy](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/java-se-nginx.html)
  * [How do I use my own security group for my load balancer when I deploy an AWS Elastic Beanstalk application?](https://aws.amazon.com/premiumsupport/knowledge-center/security-group-elastic-beanstalk/)
  * [Configuring AWS Elastic Beanstalk Environments](https://docs.aws.amazon.com/en_pv/elasticbeanstalk/latest/dg/customize-containers.html)
+ * [Elastic Beanstalk without Elastic Load Balancer](https://stackoverflow.com/questions/8014046/elastic-beanstalk-without-elastic-load-balancer): Might this be the answer along with a correct security group?
  
 ## License
 
