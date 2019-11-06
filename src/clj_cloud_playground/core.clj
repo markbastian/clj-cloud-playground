@@ -57,9 +57,8 @@
           nrepl-host (env :nrepl-host "0.0.0.0")
           production? (#{"true" true} (env :is-production false))
           server (start-server :bind nrepl-host :port nrepl-port)
-          port-actual (or (cond-> port (string? port) (Integer/parseInt port))
-                          (env :port)
-                          (get-in config [::web/server :port]))
+          port-actual (or port (env :port) (get-in config [::web/server :port]))
+          port-actual (cond-> port-actual (string? port-actual) (Integer/parseInt))
           _ (println port-actual)
           config-actual (partsbin/swap-config! sys (fn [config] (assoc-in config [::web/server :port] port-actual)))
           system (start sys)]
