@@ -52,11 +52,13 @@
 
 (defonce sys (partsbin/create config))
 
-(defn -main [& args]
+(defn -main [& [port]]
     (let [nrepl-port 3001                                   ;(some->> :nrepl-port env (re-matches #"\d+") Long/parseLong)
           nrepl-host (env :nrepl-host "0.0.0.0")
           production? (#{"true" true} (env :is-production false))
           server (when (and nrepl-port (not production?)) (start-server :bind nrepl-host :port nrepl-port))
+          port-actual (or port (port :env) (get-in config [::web/server :port]))
+          sys (partsbin/swap-config! sys (fn [config] (assoc-in config [::web/server :port] port-actual)))
           system (start sys)]
       (timbre/info "System started!!!")
       (when server (timbre/info (str "nrepl port started on port " nrepl-port ".")))
