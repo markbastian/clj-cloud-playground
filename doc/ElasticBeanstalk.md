@@ -18,7 +18,7 @@ If you want to do this, do the following:
  1. Create the archive with `lein with-profile +ebs-java zip`.
  1. Deploy the application with `lein with-profile +ebs-java dockerstalk deploy development target/clj-cloud-playground-0.1.0-SNAPSHOT.zip`. 
  
-To connect a REPL:
+To connect a REPL with TCP (potentially less secure):
  1. Go to the EC2 Dashboard and located your instance
  1. Select the instance
  1. Select the instance security group (At the lower part of the screen)
@@ -28,6 +28,13 @@ To connect a REPL:
     1. Protocol: TCP
     1. Port Range: Your REPL port (e.g. 3001)
     1. Source: Choose what you want. I use My IP. **TODO** Can I do anywhere with the assumption that a key is required?
+
+To connect with ssh:
+  1. Run `eb ssh` and follow the directions to set up ssh tunneling on your instance
+  1. Get the ssh connect command from the EC2 terminal. It will be something along the lines of `ssh -i "mykey.pem" ec2-user@my-instance.amazonaws.com`
+  1. Append the following to enable port forwarding to your instance `-L 3001:localhost:3001`, where 3001 is your nREPL port.
+  1. The complete command will be something along the lines of `ssh -i "mykey.pem" ec2-user@my-instance.amazonaws.com -L 3001:localhost:3001`
+  1. You can now connect an nREPL client to `localhost:3001`.
 
 ### EBS with Docker
 TLDR; Run `lein deploy-ebs-docker` to see this in action and inspect the alias in the project.clj file for details.
@@ -78,3 +85,9 @@ Figuring out how to connect an nNREPL session to an EBS instance has not been tr
 * [Does this work?](https://superuser.com/questions/1417848/ssh-tunnel-with-eb-cli-elastic-beanstalk-aws?rq=1)
 * [Or this](https://stackoverflow.com/questions/4742478/ssh-to-elastic-beanstalk-instance)
 `eb ssh --custom 'ssh -i ~/.ssh/keyfile.pem -L 3001:localhost:3001'`
+
+* Better solution for secure REPL. Configure ssh with `eb ssh` and follow the directions. Can we then set up forwarding?
+   * Connection directions available at the console
+   * It is something like [this](https://www.ssh.com/ssh/tunneling/example)
+   * ssh -L 3001:localhost:3001  1.2.3.4 #Remote IP Somehow you need to use the key like -i ~/.ssh/key.pem
+   * This works https://unix.stackexchange.com/questions/412750/ssh-port-forwarding-with-private-key
