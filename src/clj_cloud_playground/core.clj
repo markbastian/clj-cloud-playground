@@ -60,7 +60,7 @@
           port-actual (or (cond-> port (string? port) (Integer/parseInt port))
                           (env :port)
                           (get-in config [::web/server :port]))
-          sys (partsbin/swap-config! sys (fn [config] (assoc-in config [::web/server :port] port-actual)))
+          config-actual (partsbin/swap-config! sys (fn [config] (assoc-in config [::web/server :port] port-actual)))
           system (start sys)]
       (timbre/info "System started!!!")
       (when server (timbre/info (str "nrepl port started on port " nrepl-port ".")))
