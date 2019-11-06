@@ -32,6 +32,11 @@
                                  ["clean"]
                                  ["with-profile" "+ebs-tomcat" "uberwar"]
                                  ["with-profile" "+ebs-tomcat" "beanstalk" "deploy" "development"]]
+            "deploy-ebs-java"   ["do"
+                                 ["clean"]
+                                 ["uberjar"]
+                                 ["with-profile" "+ebs-java" "zip"]
+                                 ["with-profile" "+ebs-java" "dockerstalk" "deploy" "development" "target/clj-cloud-playground-0.1.0-SNAPSHOT.zip"]]
             "deploy-ebs-docker" ["do"
                                  ["clean"]
                                  ["uberjar"]
@@ -49,13 +54,27 @@
                                          {:region       "us-east-1"
                                           :stack-name   "64bit Amazon Linux 2018.03 v3.3.0 running Tomcat 8.5 Java 8"
                                           ;:s3-bucket    "clj-cloud-playground"
-                                          :environments [{:name    "development-tomcat"
+                                          :environments [{:name    "development"
                                                           :options {"aws:autoscaling:asg"
                                                                     {"MinSize" "1" "MaxSize" "1"}
                                                                     "aws:autoscaling:launchconfiguration"
                                                                     {"InstanceType" "t2.nano"}}}]}}
                           :dependencies [[commons-fileupload/commons-fileupload "1.4"]
                                          [javax.xml.bind/jaxb-api "2.4.0-b180830.0359"]]}
+             :ebs-java {:zip ["target/clj-cloud-playground-0.1.0-SNAPSHOT-standalone.jar"]
+                          ;["Dockerfile" "target/clj-cloud-playground-0.1.0-SNAPSHOT-standalone.jar" ".ebextensions"]
+                          :aws {:beanstalk
+                                {:region       "us-east-1"
+                                 :stack-name   "64bit Amazon Linux 2018.03 v2.10.0 running Java 8"
+                                 ;:s3-bucket    "clj-cloud-playground"
+                                 :environments [{:name    "development"
+                                                 :options {"aws:autoscaling:asg"
+                                                           {"MinSize" "1" "MaxSize" "1"}
+                                                           "aws:autoscaling:launchconfiguration"
+                                                           {"InstanceType" "t2.nano"}}
+                                                 ;This may not work since EBS appears to only open one port. Drawbridge may be the only option.
+                                                 ;:env {"NREPL_PORT" "3001"}
+                                                 }]}}}
              :ebs-docker {:zip ["Dockerfile" "target/clj-cloud-playground-0.1.0-SNAPSHOT-standalone.jar"]
                           ;["Dockerfile" "target/clj-cloud-playground-0.1.0-SNAPSHOT-standalone.jar" ".ebextensions"]
                           :aws {:beanstalk

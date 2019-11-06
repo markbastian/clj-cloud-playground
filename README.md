@@ -10,9 +10,6 @@ To run locally, do one of:
 * lein run
 * lein uberjar, java -jar target/clj-cloud-playground-0.1.0-SNAPSHOT-standalone.jar
 
-#### Heroku
-[Heroku is probably the easiest way to create a complete app](doc/Heroku.md)
-
 #### Run with Docker
 To run using Docker:
 1. Build the standalone app with `lein uberjar`
@@ -69,56 +66,14 @@ To use Amazon Elastic Container Registry (ECR) to [push an image](https://docs.a
 
 To stop your app, use `docker ps` to identify the container id then `docker stop id` (id is the container you just identified) to stop the container.
 
-#### Run with Amazon Elastic Beanstalk
-[Amazon Elasticbeanstalk](https://aws.amazon.com/elasticbeanstalk/) with Clojure has two options:
-1. Run as an uberwar using Apache Tomcat
-1. Run as a standalone uberjar app
+### Deployment Options
+If you want an end-to-end solution, use one of the following solutions.
 
-##### Tips for the REPL
-* [Does this work?](https://superuser.com/questions/1417848/ssh-tunnel-with-eb-cli-elastic-beanstalk-aws?rq=1)
-* [Or this](https://stackoverflow.com/questions/4742478/ssh-to-elastic-beanstalk-instance)
-`eb ssh --custom 'ssh -i ~/.ssh/keyfile.pem -L 3001:localhost:3001'`
+#### Heroku
+[Heroku is probably the easiest way to create a complete app](doc/Heroku.md)
 
-##### EBS with Tomcat
-TLDR; Run `lein deploy-ebs-tomcat` to see this in action and inspect the alias in the project.clj file for details.
-
-This project uses [lein-uberwar](https://github.com/luminus-framework/lein-uberwar) and [lein-beanstalk](https://github.com/weavejester/lein-beanstalk) for deployment. [lein-beanstalk](https://github.com/weavejester/lein-beanstalk) is a bit dated, but it works. Other forks include [lein-elastic-beanstalk](https://github.com/ktgit/lein-elastic-beanstalk) and [lein-aws-beanstalk](https://github.com/zombofrog/lein-aws-beanstalk).
-
-Since configuration here will conflict with configuration for deployment as a docker container, all settings specific to this deploy are contained in the :ebs-tomcat profile of the project.clj file. Note that any commands below preceded by `with-profile +ebs-tomcat` can omit those terms if you don't use a profile.
-
-To deploy your war app with Tomcat do the following:
-1. Add  [lein-uberwar](https://github.com/luminus-framework/lein-uberwar) to your project.clj plugins vector.
-1. Specify the application entry point for your uberjar in your project file (e.g. `:uberwar {:handler clj-cloud-playground.core/app}` in the :ebs-tomcat profile).
-1. Run `lein with-profile +ebs-tomcat uberwar` to create your war file.
-1. Add [lein-beanstalk](https://github.com/weavejester/lein-beanstalk) to your project.clj plugins vector.
-1. Configure your aws credentials in your project.clj file as described [here](https://github.com/weavejester/lein-beanstalk#basic-configuration).
-1. Specify the application entry point for the beanstalk plugin in your project file (e.g. `:ring {:handler clj-cloud-playground.core/app}` in the :ebs-tomcat profile).
-1. Configure your aws environment as shown in the project file or take a look at [this useful blog post](https://victorjcheng.wordpress.com/2016/02/02/deploying-a-clojure-app-using-elastic-beanstalk/). One thing you must get right is the :stack-name field. You can get a list of current stack options by invoking the command `aws elasticbeanstalk list-available-solution-stacks` and looking for the desired Tomcat instance. Note that if you read the above blog post the stack name there is out of date. This project uses "64bit Amazon Linux 2018.03 v3.1.6 running Tomcat 8.5 Java 8". Also, the blog post indicates needed a VPC for a t2.nano instance. This did not seem to be the case for me.
-1. Run `lein with-profile +ebs-tomcat beanstalk deploy $environment` where $environment is the environment specified in your project. For example, in this project the command is `lein with-profile +ebs-tomcat beanstalk deploy development`. In this project, this key can be found at `(get-in project [:profiles :ebs-tomcat :aws :beanstalk :environments 0 :name])`. If you aren't using a profile it would be found at `(get-in project [:aws :beanstalk :environments 0 :name])`. 
-
-This should successfully launch your service. Your console should look something like:
-
-```
-Creating 'development' environment (this may take several minutes)
-.................................................... Done
-Environment deployed at: clj-cloud-playground-development.region.elasticbeanstalk.com
-```
-
-You can get your deployment status with the command `lein beanstalk info` and remove your application with `lein beanstalk terminate $environment` (e.g. development).
-
-##### EBS with Docker
-TLDR; Run `lein deploy-ebs-docker` to see this in action and inspect the alias in the project.clj file for details.
-
-This option will create an uberjar application, package that application with your Dockerfile in a zip archive, and deploy the archive to EBS.
-
-If you want to do this, do the following:
- 1. Add [lein dockerstalk](https://github.com/juxt/lein-dockerstalk) and [lein zip](https://github.com/mrmcc3/lein-zip) to your plugins.
- 1. Build your app with `lein uberjar`.
- 1. Add the files to be archived as a :zip entry in your project file, like so: `:zip ["Dockerfile" "target/clj-cloud-playground-0.1.0-SNAPSHOT-standalone.jar"]`.
- 1. Create the archive with `lein with-profile +ebs-docker zip`.
- 1. Deploy the application with `lein with-profile +ebs-docker dockerstalk deploy development target/clj-cloud-playground-0.1.0-SNAPSHOT.zip`. 
-
-Terminated the deployment with the beanstalk plugin a la `lein beanstalk terminate development`. Note that dockerstalk uses beanstalk so you just use the beanstalk plugin for application termination.
+#### Amazon Elastic Beanstalk
+[This is a fairly straightforward way to create a complete app](doc/ElasticBeanstalk.md)
 
 ##### Cofiguring Cloudwatch Logging from EBS
 Follow [this guide](https://docs.aws.amazon.com/en_pv/AmazonECS/latest/developerguide/using_cloudwatch_logs.html)
@@ -188,6 +143,7 @@ Once the above was done and everything worked in the Python virtual env.
  * [How do I use my own security group for my load balancer when I deploy an AWS Elastic Beanstalk application?](https://aws.amazon.com/premiumsupport/knowledge-center/security-group-elastic-beanstalk/)
  * [Configuring AWS Elastic Beanstalk Environments](https://docs.aws.amazon.com/en_pv/elasticbeanstalk/latest/dg/customize-containers.html)
  * [Elastic Beanstalk without Elastic Load Balancer](https://stackoverflow.com/questions/8014046/elastic-beanstalk-without-elastic-load-balancer): Might this be the answer along with a correct security group?
+ * [Deploying Spring Boot Jar Application on Beanstalk Java SE Platform](https://medium.com/@autumn.bom/deploying-spring-boot-jar-application-on-beanstalk-java-se-platform-45d8d04608ae). This could give some clues for java jar deployment.
  
 ## License
 
