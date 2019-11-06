@@ -10,6 +10,21 @@ To run locally, do one of:
 * lein run
 * lein uberjar, java -jar target/clj-cloud-playground-0.1.0-SNAPSHOT-standalone.jar
 
+#### Heroku
+Heroku is perhaps the easiest way to deploy an app. Simply create the app and push your code. Use heroku port forwarding to enable a remote repl.
+1. [Install the tools](https://devcenter.heroku.com/articles/getting-started-with-clojure#set-up)
+1. Create an app (executable jar).
+1. [Deploy the Application](https://devcenter.heroku.com/articles/getting-started-with-clojure#deploy-the-app)
+  1. `heroku create`
+  1. `git push heroku master`
+  1. `heroku ps:scale web=1` to ensure running
+  1. `heroku open` to launch the app
+1. [View logs with](heroku logs --tail) `heroku logs --tail`
+1. Optional: [Use a Procfile](https://devcenter.heroku.com/articles/getting-started-with-clojure#define-a-procfile) to explicitly declare the application run command.
+1. Use `heroku ps:forward 3001' (Assuming your repl server is on port 3001) to [forward your local port to your remote repl port.](https://devcenter.heroku.com/articles/exec#port-forwarding)
+1. Stop your app using [`heroku ps:scale web=0`](https://devcenter.heroku.com/articles/getting-started-with-clojure#scale-the-app) to take the number of instances to 0.
+1. `heroku apps:destroy` can be used to completely destroy your app.
+
 #### Run with Docker
 To run using Docker:
 1. Build the standalone app with `lein uberjar`
@@ -23,20 +38,6 @@ To run using Docker:
 1. Build the image using `docker build --tag=$REPO:$TAG .` where `$REPO` and `$TAG` are your repository and tag names. In this case the exact command I am using is `docker build --tag=markbastian/clj-cloud-playground:latest .` I selected a tag of `latest` arbitrarily. It can be whatever you want.
 1. Push the image using `docker push markbastian/clj-cloud-playground:latest`.
 1. TODO: Deploy commands...
-
-##### Heroku
-1. [Install the tools](https://devcenter.heroku.com/articles/getting-started-with-clojure#set-up)
-1. Create an app (executable jar).
-1. [Deploy the Application](https://devcenter.heroku.com/articles/getting-started-with-clojure#deploy-the-app)
-  1. `heroku create`
-  1. `git push heroku master`
-  1. `heroku ps:scale web=1` to ensure running
-  1. `heroku open` to launch the app
-1. [View logs with](heroku logs --tail) `heroku logs --tail`
-1. Optional: [Use a Procfile](https://devcenter.heroku.com/articles/getting-started-with-clojure#define-a-procfile) to explicitly declare the application run command.
-1. Use `heroku ps:forward 3001' (Assuming your repl server is on port 3001) to [forward your local port to your remote repl port.](https://devcenter.heroku.com/articles/exec#port-forwarding)
-1. Stop your app using [`heroku ps:scale web=0`](https://devcenter.heroku.com/articles/getting-started-with-clojure#scale-the-app) to take the number of instances to 0.
-1. `heroku apps:destroy` can be used to completely destroy your app.
 
 ##### Direct Transfer of Docker Image to EC2
 Let's say you want to transfer your image to an EC2 instance and not use DockerHub or any other sort of repo. Assuming you have an EC2 instance running and all the correct keys and permissions set up, you can run your app in the cloud by doing the following:
