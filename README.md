@@ -86,6 +86,11 @@ To stop your app, use `docker ps` to identify the container id then `docker stop
 1. Run as an uberwar using Apache Tomcat
 1. Run as a standalone uberjar app
 
+##### Tips for the REPL
+* [Does this work?](https://superuser.com/questions/1417848/ssh-tunnel-with-eb-cli-elastic-beanstalk-aws?rq=1)
+* [Or this](https://stackoverflow.com/questions/4742478/ssh-to-elastic-beanstalk-instance)
+`eb ssh --custom 'ssh -i ~/.ssh/keyfile.pem -L 3001:localhost:3001'`
+
 ##### EBS with Tomcat
 TLDR; Run `lein deploy-ebs-tomcat` to see this in action and inspect the alias in the project.clj file for details.
 
