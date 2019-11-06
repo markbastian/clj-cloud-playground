@@ -57,7 +57,9 @@
           nrepl-host (env :nrepl-host "0.0.0.0")
           production? (#{"true" true} (env :is-production false))
           server (when (and nrepl-port (not production?)) (start-server :bind nrepl-host :port nrepl-port))
-          port-actual (or port (port :env) (get-in config [::web/server :port]))
+          port-actual (or (cond-> port (string? port) (Integer/parseInt port))
+                          (env :port)
+                          (get-in config [::web/server :port]))
           sys (partsbin/swap-config! sys (fn [config] (assoc-in config [::web/server :port] port-actual)))
           system (start sys)]
       (timbre/info "System started!!!")
