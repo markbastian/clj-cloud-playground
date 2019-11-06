@@ -48,7 +48,7 @@
                           :aws          {:beanstalk
                                          {:region       "us-east-1"
                                           :stack-name   "64bit Amazon Linux 2018.03 v3.3.0 running Tomcat 8.5 Java 8"
-                                          :s3-bucket    "clj-cloud-playground"
+                                          ;:s3-bucket    "clj-cloud-playground"
                                           :environments [{:name    "development"
                                                           :options {"aws:autoscaling:asg"
                                                                     {"MinSize" "1" "MaxSize" "1"}
@@ -61,7 +61,7 @@
                           :aws {:beanstalk
                                 {:region       "us-east-1"
                                  :stack-name   "64bit Amazon Linux 2018.03 v2.13.0 running Docker 18.06.1-ce"
-                                 :s3-bucket    "clj-cloud-playground"
+                                 ;:s3-bucket    "clj-cloud-playground"
                                  :environments [{:name    "development"
                                                  :options {"aws:autoscaling:asg"
                                                            {"MinSize" "1" "MaxSize" "1"}
