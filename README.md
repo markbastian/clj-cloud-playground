@@ -112,6 +112,9 @@ If you want to do this, do the following:
 
 Terminated the deployment with the beanstalk plugin a la `lein beanstalk terminate development`. Note that dockerstalk uses beanstalk so you just use the beanstalk plugin for application termination.
 
+##### Cofiguring Cloudwatch Logging from EBS
+Follow [this guide](https://docs.aws.amazon.com/en_pv/AmazonECS/latest/developerguide/using_cloudwatch_logs.html)
+
 ###### Challenge - Solution Stack Drift
 Sometimes when you go to revist a stack it will fail since the :stack-name entry may be deprecated. One good way to list the most recent options is to use the [Cognitect AWS API](https://github.com/cognitect-labs/aws-api). To do so, add the following dependencies to your project:
 * `[com.cognitect.aws/api "0.8.352"]`
