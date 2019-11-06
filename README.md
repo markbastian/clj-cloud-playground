@@ -11,19 +11,7 @@ To run locally, do one of:
 * lein uberjar, java -jar target/clj-cloud-playground-0.1.0-SNAPSHOT-standalone.jar
 
 #### Heroku
-Heroku is perhaps the easiest way to deploy an app. Simply create the app and push your code. Use heroku port forwarding to enable a remote repl.
-1. [Install the tools](https://devcenter.heroku.com/articles/getting-started-with-clojure#set-up)
-1. Create an app (executable jar).
-1. [Deploy the Application](https://devcenter.heroku.com/articles/getting-started-with-clojure#deploy-the-app)
-  1. `heroku create`
-  1. `git push heroku master`
-  1. `heroku ps:scale web=1` to ensure running
-  1. `heroku open` to launch the app
-1. [View logs with](heroku logs --tail) `heroku logs --tail`
-1. Optional: [Use a Procfile](https://devcenter.heroku.com/articles/getting-started-with-clojure#define-a-procfile) to explicitly declare the application run command.
-1. Use `heroku ps:forward 3001' (Assuming your repl server is on port 3001) to [forward your local port to your remote repl port.](https://devcenter.heroku.com/articles/exec#port-forwarding)
-1. Stop your app using [`heroku ps:scale web=0`](https://devcenter.heroku.com/articles/getting-started-with-clojure#scale-the-app) to take the number of instances to 0.
-1. `heroku apps:destroy` can be used to completely destroy your app.
+[Heroku is probably the easiest way to create a complete app](doc/Heroku.md)
 
 #### Run with Docker
 To run using Docker:
