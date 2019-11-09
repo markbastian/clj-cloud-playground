@@ -31,10 +31,13 @@ To connect a REPL with TCP (potentially less secure):
 
 To connect with ssh:
   1. Run `eb ssh` and follow the directions to set up ssh tunneling on your instance
-  1. Get the ssh connect command from the EC2 terminal. It will be something along the lines of `ssh -i "mykey.pem" ec2-user@my-instance.amazonaws.com`
-  1. Append the following to enable port forwarding to your instance `-L 3001:localhost:3001`, where 3001 is your nREPL port.
-  1. The complete command will be something along the lines of `ssh -i "mykey.pem" ec2-user@my-instance.amazonaws.com -L 3001:localhost:3001`
-  1. You can now connect an nREPL client to `localhost:3001`.
+  1. Connect with `eb ssh`
+      1. Using your ssh key (e.g. ebs.pem), simply run `eb ssh --custom 'ssh -i ~/.ssh/ebs.pem -L 3001:localhost:3001'`
+  1. Connect with ssh
+      1. Get the ssh connect command from the EC2 terminal. It will be something along the lines of `ssh -i "mykey.pem" ec2-user@my-instance.amazonaws.com`
+      1. Append the following to enable port forwarding to your instance `-L 3001:localhost:3001`, where 3001 is your nREPL port.
+      1. The complete command will be something along the lines of `ssh -i "mykey.pem" ec2-user@my-instance.amazonaws.com -L 3001:localhost:3001`
+      1. You can now connect an nREPL client to `localhost:3001`.
 
 ### EBS with Docker
 TLDR; Run `lein deploy-ebs-docker` to see this in action and inspect the alias in the project.clj file for details.
