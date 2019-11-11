@@ -25,7 +25,7 @@ There are two ways to connect a REPL to your deployed Java jar, via port forward
 This method is both more secure and easier than opening a port and connecting via TCP.
 
 To connect with ssh:
-  1. Run `eb ssh` and follow the directions to set up ssh tunneling on your instance. This will require a restart of your instance.
+  1. Run `eb ssh` and follow the directions to set up ssh tunneling on your instance. This will require a restart of your instance. You can also go to the EC2 control panel and modify the security group for this instance to accept TCP connections.
   
 Once you've got ssh setup, choose one of the following two methods to connect your REPL:
   
@@ -94,15 +94,6 @@ Get your deployment status with the command `lein beanstalk info` and remove you
 
 Terminate the deployment with the beanstalk plugin a la `lein beanstalk terminate development`. Note that dockerstalk uses beanstalk so you just use the beanstalk plugin for application termination.
 
-#### TODOs
-Figuring out how to connect an nNREPL session to an EBS instance has not been trivial. Here are a few things I'm investigating that will be absorbed into the correct documentation when I get everything working.
-
-* [Does this work?](https://superuser.com/questions/1417848/ssh-tunnel-with-eb-cli-elastic-beanstalk-aws?rq=1)
-* [Or this](https://stackoverflow.com/questions/4742478/ssh-to-elastic-beanstalk-instance)
-`eb ssh --custom 'ssh -i ~/.ssh/keyfile.pem -L 3001:localhost:3001'`
-
-* Better solution for secure REPL. Configure ssh with `eb ssh` and follow the directions. Can we then set up forwarding?
-   * Connection directions available at the console
-   * It is something like [this](https://www.ssh.com/ssh/tunneling/example)
-   * ssh -L 3001:localhost:3001  1.2.3.4 #Remote IP Somehow you need to use the key like -i ~/.ssh/key.pem
-   * This works https://unix.stackexchange.com/questions/412750/ssh-port-forwarding-with-private-key
+## TODOs
+* Figure out how to get REPL connections working with Docker and Tomcat (I don't care about this one as much)
+* Figure out how to set up SSH tunneling as a default so no additional config is required
