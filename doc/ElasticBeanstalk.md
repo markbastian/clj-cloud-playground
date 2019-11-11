@@ -1,6 +1,6 @@
 ## Run with Amazon Elastic Beanstalk
 [Amazon Elasticbeanstalk](https://aws.amazon.com/elasticbeanstalk/) with Clojure has a few options:
-1. Run as a standalone uberjar app
+1. [Run as a standalone uberjar app (recommended)](#run-with-amazon-elastic-beanstalk)
 1. Run as an uberwar using Apache Tomcat
 1. Run as a standalone uberjar app in a Docker container
 
