@@ -1,4 +1,4 @@
-## Run with Amazon Elastic Beanstalk
+# Run with Amazon Elastic Beanstalk
 [Amazon Elasticbeanstalk](https://aws.amazon.com/elasticbeanstalk/) with Clojure has a few options:
 1. [Run as a standalone uberjar app (recommended)](#ebs-with-a-standalone-java-jar-app)
 1. [Run as a standalone uberjar app in a Docker container](#ebs-with-docker)
@@ -6,7 +6,7 @@
 
 If you need a remote repl (e.g. nREPL) the only solution currently working is the standalone uberjar app.
 
-### EBS with a Standalone Java Jar App
+## EBS with a Standalone Java Jar App
 TLDR; Run `lein deploy-ebs-java` to see this in action and inspect the alias in the project.clj file for details.
 
 This option will create an uberjar application, package that application in a zip archive, and deploy the archive to EBS.
@@ -17,7 +17,29 @@ If you want to do this, do the following:
  1. Add the files to be archived as a :zip entry in your project file, like so: `:zip ["target/clj-cloud-playground-0.1.0-SNAPSHOT-standalone.jar"]`.
  1. Create the archive with `lein with-profile +ebs-java zip`.
  1. Deploy the application with `lein with-profile +ebs-java dockerstalk deploy development target/clj-cloud-playground-0.1.0-SNAPSHOT.zip`. 
- 
+
+### Connecting a REPL
+There are two ways to connect a REPL to your deployed Java jar, via port forwarding with SSH or by opening a port.
+
+#### REPL with SSH (Recommended)
+This method is both more secure and easier than opening a port and connecting via TCP.
+
+To connect with ssh:
+  1. Run `eb ssh` and follow the directions to set up ssh tunneling on your instance. This will require a restart of your instance.
+  
+Once you've got ssh setup, choose one of the following two methods to connect your REPL:
+  
+  1. Connect with `eb ssh`
+      1. Using your ssh key (e.g. ebs.pem), simply run `eb ssh --custom 'ssh -i ~/.ssh/ebs.pem -L 3001:localhost:3001'`
+  1. Connect with ssh
+      1. Get the ssh connect command from the EC2 terminal. It will be something along the lines of `ssh -i "mykey.pem" ec2-user@my-instance.amazonaws.com`
+      1. Append the following to enable port forwarding to your instance `-L 3001:localhost:3001`, where 3001 is your nREPL port.
+      1. The complete command will be something along the lines of `ssh -i "mykey.pem" ec2-user@my-instance.amazonaws.com -L 3001:localhost:3001`
+      1. You can now connect an nREPL client to `localhost:3001`.
+
+#### REPL with TCP
+This will open a port that you can connect to directly. However, if you set your connection to be from your IP only it will also open your REPL to connections from anyone else sharing your public IP.
+
 To connect a REPL with TCP (potentially less secure):
  1. Go to the EC2 Dashboard and located your instance
  1. Select the instance
@@ -27,19 +49,9 @@ To connect a REPL with TCP (potentially less secure):
     1. Type "Custom TCP Rule"
     1. Protocol: TCP
     1. Port Range: Your REPL port (e.g. 3001)
-    1. Source: Choose what you want. I use My IP. **TODO** Can I do anywhere with the assumption that a key is required?
+    1. Source: Choose what you want. I use My IP. Note that if you have a shared public IP anyone else with your public IP can also directly connect to your instance.
 
-To connect with ssh:
-  1. Run `eb ssh` and follow the directions to set up ssh tunneling on your instance
-  1. Connect with `eb ssh`
-      1. Using your ssh key (e.g. ebs.pem), simply run `eb ssh --custom 'ssh -i ~/.ssh/ebs.pem -L 3001:localhost:3001'`
-  1. Connect with ssh
-      1. Get the ssh connect command from the EC2 terminal. It will be something along the lines of `ssh -i "mykey.pem" ec2-user@my-instance.amazonaws.com`
-      1. Append the following to enable port forwarding to your instance `-L 3001:localhost:3001`, where 3001 is your nREPL port.
-      1. The complete command will be something along the lines of `ssh -i "mykey.pem" ec2-user@my-instance.amazonaws.com -L 3001:localhost:3001`
-      1. You can now connect an nREPL client to `localhost:3001`.
-
-### EBS with Docker
+## EBS with Docker
 TLDR; Run `lein deploy-ebs-docker` to see this in action and inspect the alias in the project.clj file for details.
 
 This option will create an uberjar application, package that application with your Dockerfile in a zip archive, and deploy the archive to EBS.
@@ -51,7 +63,7 @@ If you want to do this, do the following:
  1. Create the archive with `lein with-profile +ebs-docker zip`.
  1. Deploy the application with `lein with-profile +ebs-docker dockerstalk deploy development target/clj-cloud-playground-0.1.0-SNAPSHOT.zip`. 
 
-### EBS with Tomcat
+## EBS with Tomcat
 TLDR; Run `lein deploy-ebs-tomcat` to see this in action and inspect the alias in the project.clj file for details.
 
 This project uses [lein-uberwar](https://github.com/luminus-framework/lein-uberwar) and [lein-beanstalk](https://github.com/weavejester/lein-beanstalk) for deployment. [lein-beanstalk](https://github.com/weavejester/lein-beanstalk) is a bit dated, but it works. Other forks include [lein-elastic-beanstalk](https://github.com/ktgit/lein-elastic-beanstalk) and [lein-aws-beanstalk](https://github.com/zombofrog/lein-aws-beanstalk).
@@ -76,13 +88,13 @@ Creating 'development' environment (this may take several minutes)
 Environment deployed at: clj-cloud-playground-development.region.elasticbeanstalk.com
 ```
 
-### Tips
+## Tips
 
 Get your deployment status with the command `lein beanstalk info` and remove your application with `lein beanstalk terminate $environment` (e.g. development).
 
 Terminate the deployment with the beanstalk plugin a la `lein beanstalk terminate development`. Note that dockerstalk uses beanstalk so you just use the beanstalk plugin for application termination.
 
-##### TODOs
+#### TODOs
 Figuring out how to connect an nNREPL session to an EBS instance has not been trivial. Here are a few things I'm investigating that will be absorbed into the correct documentation when I get everything working.
 
 * [Does this work?](https://superuser.com/questions/1417848/ssh-tunnel-with-eb-cli-elastic-beanstalk-aws?rq=1)
